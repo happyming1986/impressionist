@@ -56,9 +56,8 @@ module ImpressionistController
     end
 
     private
-
     def params_json
-      params.dup.keep_if{|key, value| %w(controller action _method authenticity_token __token__ utf8).exclude?(key.to_s)}.to_json
+      params.dup.keep_if{|key, value| (Impressionist.filterd_params||[]).exclude?(key.to_s)}.to_json
     end
 
     def bypass
