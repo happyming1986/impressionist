@@ -50,11 +50,16 @@ module ImpressionistController
         :request_hash => @impressionist_hash,
         :session_hash => session_hash,
         :ip_address => request.remote_ip,
-        :referrer => request.referer
+        :referrer => request.referer,
+        :params_json=> params_json
         )
     end
 
     private
+
+    def params_json
+      params.dup.keep_if{|key, value| %w(controller action _method authenticity_token __token__ utf8).exclude?(key.to_s)}.to_json
+    end
 
     def bypass
       Impressionist::Bots.bot?(request.user_agent)
