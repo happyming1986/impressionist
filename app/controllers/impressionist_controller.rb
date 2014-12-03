@@ -49,16 +49,17 @@ module ImpressionistController
         :user_id => user_id,
         :request_hash => @impressionist_hash,
         :session_hash => session_hash,
-        :ip_address => request.remote_ip,
-        :referrer => request.referer,
-        :params_json=> params_json
         )
+      if Impressionist.new_columns.present?
+        hash = {}
+        Impressionist.new_columns.each do |key, value|
+          hash[key.to_sym] =  instance_eval(&Impressionist.new_columns[key])
+        end
+        query_params.reverse_merge!(hash)
+      end
     end
 
     private
-    def params_json
-      params.dup.keep_if{|key, value| (Impressionist.filterd_params||[]).exclude?(key.to_s)}.to_json
-    end
 
     def bypass
       Impressionist::Bots.bot?(request.user_agent)
